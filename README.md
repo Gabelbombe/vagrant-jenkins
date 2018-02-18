@@ -9,7 +9,6 @@ This configures Jenkins through [CLI/JNLP](https://wiki.jenkins-ci.org/display/J
 * Setup nginx as a Jenkins HTTPS proxy and static file server.
 * Create a simple Free Style Project job.
 * Add a Ubuntu Linux slave node.
-* Add a Windows slave node.
 * Add a macOS slave node.
 
 **NB** If you are new to Groovy, be sure to check the [Groovy Learn X in Y minutes page](https://learnxinyminutes.com/docs/groovy/).

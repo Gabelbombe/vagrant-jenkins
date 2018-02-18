@@ -48,8 +48,10 @@ apt-get install -y docker-ce
 
 #
 # daemon listen on a port
+# NOTE: https://wiki.jenkins.io/display/JENKINS/Docker+Plugin
+
 /etc/init.d/docker stop
-dockerd -H :1234 &
+dockerd -H :2375 &
 
 #
 # no sudo for docker vagrant user
