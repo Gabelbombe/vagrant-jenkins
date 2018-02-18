@@ -37,12 +37,12 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(
 
 #
 # needs to be updated again because of the repo add above
+
 apt-get update
 
 #
 # install docker-ce from default docker repo
 
-apt-cache policy docker-ce
 apt-get install -y docker-ce
 
 
