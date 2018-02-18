@@ -12,6 +12,11 @@ export DEBIAN_FRONTEND=noninteractive
 
 
 #
+# add the Docker repository to APT sources
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+#
 # make sure the package index cache is up-to-date before installing anything.
 
 apt-get update
@@ -20,6 +25,16 @@ apt-get update
 # enable systemd-journald persistent logs.
 sed -i -E 's,^#?(Storage=).*,\1persistent,' /etc/systemd/journald.conf
 systemctl restart systemd-journald
+
+
+#
+# install docker-ce from default docker repo
+apt-cache policy docker-ce
+apt-get install -y docker-ce
+
+#
+# no sudo for docker vagrant user
+usermod -aG docker vagrant
 
 
 #
