@@ -52,10 +52,10 @@ apt-get install -y docker-ce
 dockerd -H :1234 &
 
 #
-# no sudo for docker vagrant user, add jenkins user to docker group
+# no sudo for docker vagrant user
 
 usermod -aG docker vagrant
-usermod -aG docker jenkins
+
 
 #
 # install vim.
@@ -241,6 +241,7 @@ sed -i -E 's,^(/var/log/jenkins/)jenkins.log,\1*.log,' /etc/logrotate.d/jenkins
 cp -p jenkins.install.UpgradeWizard.state jenkins.install.InstallUtil.lastExecVersion
 popd
 systemctl start jenkins
+usermod -aG docker jenkins
 bash -c 'while ! wget -q --spider http://localhost:8080/cli; do sleep 1; done;'
 
 
