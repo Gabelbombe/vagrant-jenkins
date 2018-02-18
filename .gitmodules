@@ -1,0 +1,6 @@
+[submodule "modules/vagrant-macos"]
+	path = modules/vagrant-macos
+	url = https://github.com/ehime/vagrant-macos.git
+[submodule "modules/packer-ubuntu"]
+	path = modules/packer-ubuntu
+	url = https://github.com/ehime/packer-ubuntu.git
