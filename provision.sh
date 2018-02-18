@@ -25,7 +25,7 @@ systemctl restart systemd-journald
 #
 # curl and add-apt-repository is required
 
-apt-get install -y curl software-properties-common python-software-properties
+apt-get install -y curl apt-transport-https software-properties-common python-software-properties
 #
 # add the Docker repository to APT sources
 
@@ -44,14 +44,16 @@ apt-cache policy docker-ce
 apt-get install -y docker-ce
 
 
-###### NOTE: user jenkins needs auth as well
+#
+# daemon listen on a port
 
+dockerd -H :1234
 
 #
-# no sudo for docker vagrant user
+# no sudo for docker vagrant user, add jenkins user to docker group
 
 usermod -aG docker vagrant
-
+usermod -aG docker jenkins
 
 #
 # install vim.
