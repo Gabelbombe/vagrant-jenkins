@@ -5,11 +5,6 @@ domain=$(hostname --fqdn)
 
 # use the local Jenkins user database.
 config_authentication='jenkins'
-# OR use LDAP.
-# NB this assumes you are running the Active Directory from https://github.com/rgl/windows-domain-controller-vagrant.
-# NB AND you must manually copy its tmp/ExampleEnterpriseRootCA.der file to this environment tmp/ directory.
-#config_authentication='ldap'
-
 
 echo 'Defaults env_keep += "DEBIAN_FRONTEND"' >/etc/sudoers.d/env_keep_apt
 chmod 440 /etc/sudoers.d/env_keep_apt
@@ -397,105 +392,6 @@ println sprintf("User Full Name: %s", u.fullName)
 u.allProperties.each { println sprintf("User property: %s", it) }; null
 EOF
 
-# use LDAP for user authentication (when enabled).
-# NB this assumes you are running the Active Directory from https://github.com/rgl/windows-domain-controller-vagrant.
-# see https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin
-# see https://github.com/jenkinsci/ldap-plugin/blob/b0b86221a898ecbd95c005ceda57a67533833314/src/main/java/hudson/security/LDAPSecurityRealm.java#L480
-if [ "$config_authentication" = 'ldap' ]; then
-echo '192.168.56.2 dc.example.com' >>/etc/hosts
-openssl x509 -inform der -in /vagrant/tmp/ExampleEnterpriseRootCA.der -out /usr/local/share/ca-certificates/ExampleEnterpriseRootCA.crt
-update-ca-certificates
-jgroovy = <<'EOF'
-import jenkins.model.Jenkins
-import jenkins.security.plugins.ldap.FromUserRecordLDAPGroupMembershipStrategy
-import jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy
-import hudson.security.LDAPSecurityRealm
-import hudson.util.Secret
-
-Jenkins.instance.securityRealm = new LDAPSecurityRealm(
-    // String server:
-    // TIP use the ldap: scheme and wireshark on the dc.example.com machine to troubeshoot.
-    'ldaps://dc.example.com',
-
-    // String rootDN:
-    'DC=example,DC=com',
-
-    // String userSearchBase:
-    // NB this is relative to rootDN.
-    'CN=Users',
-
-    // String userSearch:
-    // NB this is used to determine that a user exists.
-    // NB {0} is replaced with the username.
-    '(&(sAMAccountName={0})(objectClass=person)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))',
-
-    // String groupSearchBase:
-    // NB this is relative to rootDN.
-    'CN=Users',
-
-    // String groupSearchFilter:
-    // NB this is used to determine that a group exists.
-    // NB the search is scoped to groupSearchBase.
-    // NB {0} is replaced with the groupname.
-    '(&(objectCategory=group)(cn={0}))',
-
-    // LDAPGroupMembershipStrategy groupMembershipStrategy:
-    // NB this is used to determine a user groups.
-    // Default: (|(member={0})(uniqueMember={0})(memberUid={1}))
-    // NB the search is scoped to groupSearchBase.
-    // NB {0} is replaced with the user DN.
-    // NB {1} is replaced with the username.
-    new FromGroupSearchLDAPGroupMembershipStrategy('(&(objectCategory=group)(member={0}))'),
-    //new FromUserRecordLDAPGroupMembershipStrategy('memberOf'),
-
-    // String managerDN:
-    'jane.doe@example.com',
-
-    // Secret managerPasswordSecret:
-    Secret.fromString('HeyH0Password'),
-
-    // boolean inhibitInferRootDN:
-    false,
-
-    // boolean disableMailAddressResolver:
-    false,
-
-    // CacheConfiguration cache:
-    null,
-
-    // EnvironmentProperty[] environmentProperties:
-    null,
-
-    // String displayNameAttributeName:
-    'displayName',
-
-    // String mailAddressAttributeName:
-    'mail',
-
-    // IdStrategy userIdStrategy:
-    null,
-
-    // IdStrategy groupIdStrategy:
-    null)
-
-Jenkins.instance.save()
-EOF
-# verify that we can resolve an LDAP user and group.
-# see http://javadoc.jenkins-ci.org/hudson/security/SecurityRealm.html
-# see http://javadoc.jenkins-ci.org/hudson/security/GroupDetails.html
-jgroovy = <<'EOF'
-import jenkins.model.Jenkins
-
-// resolve a user.
-// NB u is-a org.acegisecurity.userdetails.ldap.LdapUserDetailsImpl.
-u = Jenkins.instance.securityRealm.loadUserByUsername("vagrant")
-u.authorities.sort().each { println sprintf("LDAP user %s authority: %s", u.username, it) }
-
-// resolve a group.
-// NB g is-a hudson.security.LDAPSecurityRealm$GroupDetailsImpl.
-g = Jenkins.instance.securityRealm.loadGroupByGroupname("Enterprise Admins")
-println sprintf("LDAP group: %s", g.name)
-EOF
 fi
 
 # create example accounts (when using jenkins authentication).
@@ -555,25 +451,6 @@ node = new DumbSlave(
     new CommandLauncher("ssh ubuntu.jenkins.example.com /var/jenkins/bin/jenkins-slave"))
 node.numExecutors = 3
 node.labelString = "ubuntu 16.04 linux amd64"
-Jenkins.instance.nodesObject.addNode(node)
-Jenkins.instance.nodesObject.save()
-EOF
-
-
-#
-# add the windows slave node.
-
-jgroovy = <<'EOF'
-import jenkins.model.Jenkins
-import hudson.slaves.DumbSlave
-import hudson.slaves.CommandLauncher
-
-node = new DumbSlave(
-    "windows",
-    "C:/jenkins",
-    new CommandLauncher("ssh windows.jenkins.example.com C:/jenkins/bin/jenkins-slave"))
-node.numExecutors = 3
-node.labelString = "windows 2016 vs2017 amd64"
 Jenkins.instance.nodesObject.addNode(node)
 Jenkins.instance.nodesObject.save()
 EOF
@@ -640,31 +517,6 @@ uname -a
 env
 locale
 id
-'''))
-
-folder.add(project, project.name)
-EOF
-
-jgroovy = <<'EOF'
-import jenkins.model.Jenkins
-import hudson.model.FreeStyleProject
-import hudson.model.labels.LabelAtom
-import hudson.plugins.powershell.PowerShell
-import hudson.tasks.BatchFile
-
-folder = Jenkins.instance.getItem('dump-environment')
-
-project = new FreeStyleProject(folder, 'windows')
-project.assignedLabel = new LabelAtom('windows')
-project.buildersList.add(new BatchFile(
-'''\
-set
-whoami /all
-'''))
-project.buildersList.add(new PowerShell(
-'''\
-[Environment]::OSVersion | Format-Table -AutoSize
-$PSVersionTable | Format-Table -AutoSize
 '''))
 
 folder.add(project, project.name)

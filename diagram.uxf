@@ -28,19 +28,6 @@ ubuntu.jenkins.example.com
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLDeployment</id>
-    <coordinates>
-      <x>460</x>
-      <y>140</y>
-      <w>260</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;jenkins slave&gt;&gt;
-windows.jenkins.example.com
-(10.10.10.102)</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
       <x>280</x>
@@ -104,32 +91,6 @@ r1=https
     <additional_attributes>10.0;20.0;80.0;20.0</additional_attributes>
   </element>
   <element>
-    <id>UMLDeployment</id>
-    <coordinates>
-      <x>460</x>
-      <y>350</y>
-      <w>260</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;AD LDAP user authentication&gt;&gt;
-dc.example.com
-(192.168.56.2)</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>380</x>
-      <y>390</y>
-      <w>100</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=()-
-r1=ldaps
-</panel_attributes>
-    <additional_attributes>10.0;20.0;80.0;20.0</additional_attributes>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
       <x>280</x>
@@ -140,20 +101,6 @@ r1=ldaps
     <panel_attributes>lt=-(
 </panel_attributes>
     <additional_attributes>10.0;20.0;90.0;20.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>340</x>
-      <y>320</y>
-      <w>390</w>
-      <h>120</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;when config_authentication='ldap'&gt;&gt;
-halign=right
-lt=.
-layer=-1</panel_attributes>
-    <additional_attributes/>
   </element>
   <element>
     <id>UMLDeployment</id>
