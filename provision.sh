@@ -12,11 +12,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 
 #
-# add the Docker repository to APT sources
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-#
 # make sure the package index cache is up-to-date before installing anything.
 
 apt-get update
@@ -28,12 +23,33 @@ systemctl restart systemd-journald
 
 
 #
+# curl and add-apt-repository is required
+
+apt-get install -y curl software-properties-common python-software-properties
+#
+# add the Docker repository to APT sources
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+
+#
+# needs to be updated again because of the repo add above
+apt-get update
+
+#
 # install docker-ce from default docker repo
+
 apt-cache policy docker-ce
 apt-get install -y docker-ce
 
+
+###### NOTE: user jenkins needs auth as well
+
+
 #
 # no sudo for docker vagrant user
+
 usermod -aG docker vagrant
 
 
