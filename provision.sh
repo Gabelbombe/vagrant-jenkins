@@ -26,6 +26,8 @@ systemctl restart systemd-journald
 # curl and add-apt-repository is required
 
 apt-get install -y curl apt-transport-https software-properties-common python-software-properties
+
+
 #
 # add the Docker repository to APT sources
 
@@ -46,8 +48,8 @@ apt-get install -y docker-ce
 
 #
 # daemon listen on a port
-
-dockerd -H :1234
+/etc/init.d/docker stop
+dockerd -H :1234 &
 
 #
 # no sudo for docker vagrant user, add jenkins user to docker group
@@ -78,7 +80,7 @@ systemctl status nginx
 systemctl restart nginx
 systemctl status jenkins
 systemctl restart jenkins
-less /var/log/jenkins/jenkins.log
+l
 tail -f /var/log/jenkins/jenkins.log
 tail -f /var/log/jenkins/access.log | grep -v ajax
 cat /var/lib/jenkins/secrets/initialAdminPassword
