@@ -392,8 +392,6 @@ println sprintf("User Full Name: %s", u.fullName)
 u.allProperties.each { println sprintf("User property: %s", it) }; null
 EOF
 
-fi
-
 # create example accounts (when using jenkins authentication).
 # see http://javadoc.jenkins-ci.org/hudson/model/User.html
 # see http://javadoc.jenkins-ci.org/hudson/security/HudsonPrivateSecurityRealm.html
