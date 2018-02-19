@@ -50,6 +50,12 @@ After provisioning you can delete it, as `Xcode_8.1.cpio.xz` will take its place
 Email notifications are sent to a local [MailHog](https://github.com/mailhog/MailHog) SMTP server running at localhost:1025 and you can browse them at [http://jenkins.example.com:8025](http://jenkins.example.com:8025).
 
 
+# Version
+```bash
+vagrant@jenkins:~$ java -jar /usr/share/jenkins/jenkins.war --version
+  2.89.4
+```
+
 # Reference
 
 * [Jenkins Handbook](https://jenkins.io/doc/book/)
